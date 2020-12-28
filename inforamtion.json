@@ -1,0 +1,20 @@
+{
+    "Important_Date":{},
+    "Holiday":
+        {
+        "1-1": "Happy New Year!",
+        "1-18":"Today is Martin Luther King Jr day",
+        "2-12": "Happy chinese new year",
+        "4-1": "Happy April fool!",
+        "4-4":"Happy easter!",
+        "5-31":"Happy Memorial Day",
+        "7-4": "Happy US Independence Day!",
+        "9-6": "Happy Labor Day!",
+        "10-11": "Happy columbus Day!",
+        "10-31":"Happy Halloween! Go out and grab some candy",
+        "11-11": "Happy US Veterans Day!",
+        "11-25": "Happy Thanksgiving!",
+        "12-25": "Marry Christmas!",
+        "12-31":"Update your hardcoded dates for next year"
+        }
+}

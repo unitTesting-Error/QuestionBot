@@ -1,0 +1,5 @@
+
+command for bot: print to print question list and anything else to add to the text file from<@309423380527054861>
+ok im getting somewhere  my question is how do we know what department names to look for and then pullout? from<@309423380527054861>
+what are the fastest way to clear a txt file by certain line from<@309423380527054861>
+Where do I get the json blob from<@309423380527054861>
