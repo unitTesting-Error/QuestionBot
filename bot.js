@@ -73,6 +73,7 @@ client.on("message",(receivedMessage) =>{
         let primary = command[1];
         let usablecommand = primary.split(" ");
         console.log(primary);
+
         if(usablecommand[0] == "p"){
             usablecommand.shift()
             let secondary = usablecommand.join(" ");
@@ -81,24 +82,19 @@ client.on("message",(receivedMessage) =>{
                 return receivedMessage.reply("Be in a voice channel please");
             }
             console.log(secondary);
-            receivedMessage.reply("ok "+ secondary +" is playing now");
-        //     (async () => {
-        //         let url_list = []
-        //         voicechannel.join()
-        //         const url_YT = await getYT_URL(secondary);
-        //         url_list.push(url_YT);
-        //     if(url_list != []){
-        //         url_list.push(url_YT);
-        //         console.log(url_list)
-        //      }else{
-        //     for(let i of url_YT){
-        //         play(voicechannel,i,receivedMessage);
-        //     }
-        // }
-        //     });
-            getYT_URL(secondary).then(item =>{
-                // url_list.push(item)
-                play(voicechannel,item,receivedMessage);
+            getYT_URL(secondary).then(stuff=>{
+                return stuff
+            })
+            .then(url =>{
+            url_link.push(url)
+            //add a if else statement when there is only one song in list
+            if(url_link.length == 1){
+            play(voicechannel,url_link[0],receivedMessage)
+            receivedMessage.reply("ok " + secondary + " is playing now");
+            }else{
+            console.log(url_link);
+            receivedMessage.reply("ok " + secondary+ " is added to the list");
+            }
             });
         }
 
@@ -106,23 +102,32 @@ client.on("message",(receivedMessage) =>{
             const voicechannel = receivedMessage.member.voice.channel;
             voicechannel.leave();
         }
+
+        if(usablecommand[0] == "q"){
+            usablecommand.shift()
+            let secondary = usablecommand.join(" ");
+
+        }
     }
 });
 
-
+let url_link = []
 async function getYT_URL (secondary){
     const video = await yts(secondary);
     const video_list = video.videos.slice(0,1);
-    return video_list[0].url
+    return video_list[0].url;
 }
 
 async function play(channel,url,message){
     let connect = await channel.join();
     const stream = ytdl(url);
-    const dispatcher = connect.play(stream);
-    dispatcher.on("end", () => {
-        channel.leave();
-        message.channel.send("Done");
+    const dispatcher = connect.play(stream, {filter:"audio"});
+    dispatcher.on("finish", (end) => {
+    url_link.shift()
+    if(url_link.length != 0){
+    play(channel, url_link[0], message)
+    }
+    console.log("finish")
     });
 }
 //login the bot
