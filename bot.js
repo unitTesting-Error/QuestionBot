@@ -14,6 +14,7 @@ const model = new TeachableMachine({
 const yts = require("yt-search");
 const ytdl = require('ytdl-core');
 
+const prefix = "`"
 
 client.on("ready",()=>{
 sent_holiday_message()
@@ -39,7 +40,8 @@ function sent_holiday_message(){
 client.on("message",(receivedMessage) =>{
     //channel id for school 780571908064280596
     //channel id for testing 771619758943764493
-    if (receivedMessage.attachments.size > 0 && (receivedMessage.channel.id == "780571908064280596" || receivedMessage.channel.id == "771619758943764493") ){
+    // && (receivedMessage.channel.id == "780571908064280596" || receivedMessage.channel.id == "771619758943764493")
+    if (receivedMessage.attachments.size > 0 ){
        receivedMessage.attachments.forEach(element => {
            const url = element.url;
            model.classify({
@@ -66,9 +68,7 @@ client.on("message",(receivedMessage) =>{
 
     }
 
-    if(receivedMessage.content[0] == "`"){
-
-
+    if(receivedMessage.content[0] == prefix){
         let command = receivedMessage.content.split("`");
         let primary = command[1];
         let usablecommand = primary.split(" ");
@@ -82,8 +82,22 @@ client.on("message",(receivedMessage) =>{
             }
             console.log(secondary);
             receivedMessage.reply("ok "+ secondary +" is playing now");
-            voicechannel.join()
+        //     (async () => {
+        //         let url_list = []
+        //         voicechannel.join()
+        //         const url_YT = await getYT_URL(secondary);
+        //         url_list.push(url_YT);
+        //     if(url_list != []){
+        //         url_list.push(url_YT);
+        //         console.log(url_list)
+        //      }else{
+        //     for(let i of url_YT){
+        //         play(voicechannel,i,receivedMessage);
+        //     }
+        // }
+        //     });
             getYT_URL(secondary).then(item =>{
+                // url_list.push(item)
                 play(voicechannel,item,receivedMessage);
             });
         }
@@ -92,14 +106,10 @@ client.on("message",(receivedMessage) =>{
             const voicechannel = receivedMessage.member.voice.channel;
             voicechannel.leave();
         }
-    
-
     }
+});
 
 
-
-
-})
 async function getYT_URL (secondary){
     const video = await yts(secondary);
     const video_list = video.videos.slice(0,1);
@@ -110,12 +120,11 @@ async function play(channel,url,message){
     let connect = await channel.join();
     const stream = ytdl(url);
     const dispatcher = connect.play(stream);
-    dispatcher.on("end",() =>{
-    channel.leave();
-    message.channel.send("Done");
+    dispatcher.on("end", () => {
+        channel.leave();
+        message.channel.send("Done");
     });
 }
 //login the bot
-// client.login(process.env.token);
-client.login("NzgwMjE3MDMwNzYyNTYxNTg2.X7r3uw.d1tPDkjbLeHaYk36lgDD1THu_8Q");
+client.login(process.env.token);
 //node questionbot.js 
