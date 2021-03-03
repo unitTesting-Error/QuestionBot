@@ -1,135 +1,319 @@
+const schedule = require('node-schedule');
 
-const Discord = require("discord.js");
-
+//
+const Discord = require('discord.js');
 const client = new Discord.Client();
 
-var fs = require('fs');
 
-const TeachableMachine = require("@sashido/teachablemachine-node");
+const CSE116_Jesse = '770800149471035407';
+const CSE116_Nasrin = '';
+const CSE191_Nasrin = '';
+const CSE191_Knepley = '';
 
-const model = new TeachableMachine({
-    modelUrl: "https://teachablemachine.withgoogle.com/models/iqdv912oc/"
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(CSE116_Jesse);
+    setInterval(()=>{
+        const d = new Date();
+        const NewDay = new Weekly_reminder(d.getDay());
+        // console.log(NewDay);
+        NewDay.run();
+    },60000)
 });
 
-const yts = require("yt-search");
-const ytdl = require('ytdl-core');
-
-const prefix = "`"
-
-client.on("ready",()=>{
-sent_holiday_message()
-});
-
-
-function sent_holiday_message(){
-    setInterval(function(){
-        var d = new Date();
-        let month = d.getMonth()
-        let date = d.getDate()
-        let mmdd = month.toString() + "-"+date.toString();
-        fs.readFile("inforamtion.json",(err,data)=>{
-            let json = JSON.parse(data)
-            if(mmdd in json["Holiday"]){
-                client.channels.cache.get("750395242368204972").send(json["Holiday"][mmdd]);
-            }
-        })
-    }, 43200000)
-}
-
-//when someone send a message
-client.on("message",(receivedMessage) =>{
-    //channel id for school 780571908064280596
-    //channel id for testing 771619758943764493
-    // && (receivedMessage.channel.id == "780571908064280596" || receivedMessage.channel.id == "771619758943764493")
-    if (receivedMessage.attachments.size > 0 ){
-       receivedMessage.attachments.forEach(element => {
-           const url = element.url;
-           model.classify({
-               imageUrl: url,
-           }).then((predictions) => {
-               console.log("Predictions:", predictions);
-               for(let stuff of predictions){
-                   receivedMessage.reply(stuff["class"]+": " + String(stuff["score"]*100));
-               }
-               let item1 = predictions[0]["score"]
-               let item2 = predictions[1]["score"]
-               if(item2 >item1){
-                   receivedMessage.reply(predictions[1]["class"])
-               }else{
-                   receivedMessage.reply(predictions[0]["class"])
-               }
-               
-            //    receivedMessage.reply(predictions)
-            //    receivedMessage.reply(predictions[1])
-           }).catch((e) => {
-               console.log("ERROR", e);
-           });
-       });
-
-    }
-
-    if(receivedMessage.content[0] == prefix){
-        let command = receivedMessage.content.split("`");
-        let primary = command[1];
-        let usablecommand = primary.split(" ");
-        console.log(primary);
-
-        if(usablecommand[0] == "p"){
-            usablecommand.shift()
-            let secondary = usablecommand.join(" ");
-            const voicechannel = receivedMessage.member.voice.channel;
-            if(!voicechannel){
-                return receivedMessage.reply("Be in a voice channel please");
-            }
-            console.log(secondary);
-            getYT_URL(secondary).then(stuff=>{
-                return stuff
-            })
-            .then(url =>{
-            url_link.push(url)
-            //add a if else statement when there is only one song in list
-            if(url_link.length == 1){
-            play(voicechannel,url_link[0],receivedMessage)
-            receivedMessage.reply("ok " + secondary + " is playing now");
-            }else{
-            console.log(url_link);
-            receivedMessage.reply("ok " + secondary+ " is added to the list");
-            }
-            });
-        }
-
-        if(usablecommand[0]=="leave"){
-            const voicechannel = receivedMessage.member.voice.channel;
-            voicechannel.leave();
-        }
-
-        if(usablecommand[0] == "q"){
-            usablecommand.shift()
-            let secondary = usablecommand.join(" ");
-
-        }
+client.on('message', msg => {
+    if (msg.content === 'ping') {
+        msg.reply('Pong!');
     }
 });
 
-let url_link = []
-async function getYT_URL (secondary){
-    const video = await yts(secondary);
-    const video_list = video.videos.slice(0,1);
-    return video_list[0].url;
+// client.login(process.env.token);
+client.login("NzgwMjE3MDMwNzYyNTYxNTg2.X7r3uw.8dj6b5ESB_9ZTfkHXKwL7muK4KQ");
+
+function officeHour(className,TaName,Channel,timeInbetween){
+    const Message = "Office Hour for "+className+", "+ TaName+" has started."
+    SentChannel(Channel,Message)
+    const EndMessage = "Office Hour for "+className+", "+ TaName+" has ended."
+    setTimeout(()=>{SentChannel(Channel,EndMessage)},timeInbetween)
 }
 
-async function play(channel,url,message){
-    let connect = await channel.join();
-    const stream = ytdl(url);
-    const dispatcher = connect.play(stream, {filter:"audio"});
-    dispatcher.on("finish", (end) => {
-    url_link.shift()
-    if(url_link.length != 0){
-    play(channel, url_link[0], message)
+class WeekDay{
+    constructor(){
+        // this.DateObject = new Date();
+        // this.Hours = this.DateObject.getHours();
+        // this.Minutes = this.DateObject.getMinutes();
+        // this.weekDay = this.DateObject.getDay();
     }
-    console.log("finish")
-    });
+
+
+    classStarting(className,channel){
+        const Message = className + " is starting soon"
+        SentChannel(channel,Message)
+    }
+
+    runningOfficeHourCse191(){
+        // console.log("Hello")
+    }
 }
-//login the bot
-client.login(process.env.token);
-//node questionbot.js 
+
+class Monday extends WeekDay{
+    constructor() {
+        super()
+    }
+
+    runningOfficeHourCse191(){
+        const CSE191nasrinTA1 = schedule.scheduleJob({hour: 12, minute: 30, seconds:0,dayOfWeek: 1}, function(){
+            officeHour("CSE191","Nasrin Akhter",CSE191_Nasrin,5400000)
+        });
+
+        const CSE191nasrinTA2 = schedule.scheduleJob({hour: 9, minute: 30,seconds:0, dayOfWeek: 1}, function(){
+            officeHour("CSE191","Zhanghexuan Ji",CSE191_Nasrin,7200000)
+        });
+
+        const CSE191nasrinTA3 = schedule.scheduleJob({hour: 14, minute: 0, seconds:0, dayOfWeek: 1}, function(){
+            officeHour("CSE191","Anthony Hom",CSE191_Nasrin,3600000)
+        });
+
+        const CSE191nasrinTA4 = schedule.scheduleJob({hour: 16, minute: 0, seconds:0,dayOfWeek: 1}, function(){
+            officeHour("CSE191","Kyung Won Lee",CSE191_Nasrin,7200000)
+        });
+
+        const CSE191nasrinTA5 = schedule.scheduleJob({hour: 15, minute: 0, seconds:0,dayOfWeek: 1}, function(){
+            officeHour("CSE191","Eshan Chowdhury",CSE191_Nasrin,3600000)
+        });
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour: 8, minute: 0, seconds:0,dayOfWeek: 1}, function(){
+            officeHour("CSE116","Marcos, Mike (Discord)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA2 = schedule.scheduleJob({hour: 10, minute: 0,seconds:0, dayOfWeek: 1}, function(){
+            officeHour("CSE116","Sia(Zoom)",CSE116_Jesse,10800000)
+        });
+
+        const CSE116jessesTA3 = schedule.scheduleJob({hour: 15, minute: 0,seconds:0, dayOfWeek: 1}, function(){
+            officeHour("CSE116","Hannah(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA4 = schedule.scheduleJob({hour: 16, minute: 0,seconds:0, dayOfWeek: 1}, function(){
+            officeHour("CSE116","Logan(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA5 = schedule.scheduleJob({hour: 17, minute: 0,seconds:0,dayOfWeek: 1}, function(){
+            officeHour("CSE116","Matt(Zoom)",CSE116_Jesse,3600000)
+        });
+
+    }
+}
+
+
+class Tuesday extends WeekDay{
+    constructor() {
+        super();
+    }
+    runningOfficeHourCse191(){
+        const CSE191TA1 = schedule.scheduleJob({hour:14,minute:0,seconds:0,dayOfWeek: 2}, function(){
+            officeHour("CSE191","Neel",CSE191_Nasrin,3600000)
+        });
+
+        const CSE191TA2 = schedule.scheduleJob({hour:9,minute:30,seconds:0,dayOfWeek: 2}, function(){
+            officeHour("CSE191","Sonawane Priya Sanjay",CSE191_Nasrin,3600000)
+        });
+
+        const CSE191TA3 = schedule.scheduleJob({hour:11,minute:0,seconds:0,dayOfWeek: 2}, function(){
+            officeHour("CSE191","Michael Morgenthal",CSE191_Nasrin,7200000)
+        });
+
+        const CSE191TA4 = schedule.scheduleJob({hour:16,minute:0,seconds:0,dayOfWeek: 2}, function(){
+            officeHour("CSE191","Nitish",CSE191_Nasrin,3600000)
+        });
+
+        const CSE191TA5 = schedule.scheduleJob({hour:9,minute:0,seconds:0,dayOfWeek: 2}, function(){
+            officeHour("CSE191","Swati Suresh",CSE191_Nasrin,3600000)
+        });
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour: 8, minute: 0,seconds:0, dayOfWeek: 2}, function(){
+            officeHour("CSE116","Marcos(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA2 = schedule.scheduleJob({hour: 10, minute: 0,seconds:0, dayOfWeek: 2}, function(){
+            officeHour("CSE116","Nicholas(Discord)",CSE116_Jesse,5400000)
+        });
+
+        const CSE116jessesTA3 = schedule.scheduleJob({hour: 13, minute: 0,seconds:0, dayOfWeek: 2}, function(){
+            officeHour("CSE116","Rin(Discord)",CSE116_Jesse,10800000)
+        });
+
+        const CSE116jessesTA4 = schedule.scheduleJob({hour: 15, minute: 0, seconds:0,dayOfWeek: 2}, function(){
+            officeHour("CSE116","Shadman(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA5 = schedule.scheduleJob({hour: 17, minute: 0,seconds:0, dayOfWeek: 2}, function(){
+            officeHour("CSE116","Lana(Discord)",CSE116_Jesse,5400000)
+        });
+
+        const CSE116jessesTA6 = schedule.scheduleJob({hour:18, minute: 0,seconds:0,dayOfWeek: 2},function(){
+            officeHour("CSE116","Jon R(Zoom)",CSE116_Jesse,10800000)
+        });
+    }
+
+}
+
+class Wednesday extends WeekDay{
+    constructor() {
+        super();
+    }
+    runningOfficeHourCse191(){
+        const CSE191TA1 = schedule.scheduleJob({hour:10,minute:0,seconds:0,dayOfWeek: 3}, function(){
+            officeHour("CSE191","Nasrin Akhter",CSE191_Nasrin,3600000)
+        });
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour: 8, minute: 0, seconds:0,dayOfWeek: 3}, function(){
+            officeHour("CSE116","Mike(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA2 = schedule.scheduleJob({hour: 9, minute: 0,seconds:0, dayOfWeek: 3}, function(){
+            officeHour("CSE116","Hannah(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA3 = schedule.scheduleJob({hour: 10, minute: 0,seconds:0, dayOfWeek: 3}, function(){
+            officeHour("CSE116","Sia(Zoom)",CSE116_Jesse,10800000)
+        });
+
+        const CSE116jessesTA4 = schedule.scheduleJob({hour: 12, minute: 0,seconds:0, dayOfWeek: 3}, function(){
+            officeHour("CSE116","Logan(Zoom)",CSE116_Jesse,10800000)
+        });
+
+        const CSE116jessesTA5 = schedule.scheduleJob({hour: 15, minute: 0,seconds:0, dayOfWeek: 3}, function(){
+            officeHour("CSE116","Lana(Discord)",CSE116_Jesse,10800000)
+        });
+
+        const CSE116jessesTA6 = schedule.scheduleJob({hour:15, minute: 0,seconds:0,dayOfWeek: 3},function(){
+            officeHour("CSE116","Sia(Zoom)",CSE116_Jesse,10800000)
+        });
+    }
+
+}
+
+class Thursday extends WeekDay{
+    constructor() {
+        super();
+    }
+    runningOfficeHourCse191(){
+        const CSE191TA1 = schedule.scheduleJob({hour:10,minute:30,seconds:0,dayOfWeek: 4}, function(){
+            officeHour("CSE191","Anthony Hom",CSE191_Nasrin,3600000)
+        });
+
+        const CSE191TA2 = schedule.scheduleJob({hour:14,minute:0,seconds:0,dayOfWeek: 4}, function(){
+            officeHour("CSE191","Neel",CSE191_Nasrin,3600000)
+        });
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour: 10, minute: 0,seconds:0, dayOfWeek: 4}, function(){
+            officeHour("CSE116","Jon R(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA2 = schedule.scheduleJob({hour: 10, minute: 0,seconds:0, dayOfWeek: 4}, function(){
+            officeHour("CSE116","Marcos(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA3 = schedule.scheduleJob({hour: 19, minute: 0,seconds:0, dayOfWeek: 3}, function(){
+            officeHour("CSE116","Jesse(Zoom)",CSE116_Jesse,10800000)
+        });
+
+
+    }
+
+}
+
+class Friday extends WeekDay{
+    constructor() {
+        super();
+    }
+    runningOfficeHourCse191(){
+        const CSE191TA1 = schedule.scheduleJob({hour:10,minute:0,seconds:0,dayOfWeek: 5}, function(){
+            officeHour("CSE191","Sonawane Priya Sanjay",CSE191_Nasrin,3600000)
+        });
+
+        const CSE191TA2 = schedule.scheduleJob({hour:9,minute:0,seconds:0,dayOfWeek: 5}, function(){
+            officeHour("CSE191","Swati Suresh",CSE191_Nasrin,3600000)
+        });
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour: 8, minute: 0,seconds:0, dayOfWeek: 5}, function(){
+            officeHour("CSE116","Mike(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA2 = schedule.scheduleJob({hour: 9, minute: 0, seconds:0,dayOfWeek: 5}, function(){
+            officeHour("CSE116","Hannah(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA3 = schedule.scheduleJob({hour: 10, minute: 0,seconds:0, dayOfWeek: 5}, function(){
+            officeHour("CSE116","Sia(Zoom)",CSE116_Jesse,10800000)
+        });
+
+        const CSE116jessesTA4 = schedule.scheduleJob({hour: 12, minute: 0, seconds:0,dayOfWeek: 5}, function(){
+            officeHour("CSE116","Matt(Zoom)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA5 = schedule.scheduleJob({hour: 15, minute: 0,seconds:0, dayOfWeek: 5}, function(){
+            officeHour("CSE116","Shadman(Discord)",CSE116_Jesse,3600000)
+        });
+
+        const Testing = schedule.scheduleJob({hour: 21, minute: 28, seconds:0,dayOfWeek: 5}, function(){
+            officeHour("CSE116","Testing",CSE116_Jesse,3600000)
+            // console.log("hello")
+        });
+    }
+
+}
+
+
+class Saturday extends WeekDay{
+    constructor(){
+        super();
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour:10,minute:0,seconds:0,dayOfWeek:6},function(){
+            officeHour("CSE116","Nicholas(Discord)",CSE116_Jesse,3600000)
+        });
+
+        const CSE116jessesTA2 = schedule.scheduleJob({hour:9,minute:3,second:0,dayOfWeek:6},function(){
+            officeHour("CSE116","Nicholas(Discord)",CSE116_Jesse,3600000)
+            // console.log("Hello")
+        });
+
+    }
+}
+
+class Sunday extends WeekDay{
+    constructor(){
+        super();
+    }
+    runningOfficeHourCse116(){
+        const CSE116jessesTA1 = schedule.scheduleJob({hour:12,minute:0,seconds:0,dayOfWeek:7},function(){
+            officeHour("CSE116","Nicholas(Discord)",CSE116_Jesse,3600000)
+        });
+    }
+}
+
+class Weekly_reminder{
+    constructor(weekday){
+        const ListWeek = [new Sunday,new Monday, new Tuesday(),new Wednesday(), new Thursday(),new Friday,new Saturday()]
+        this.state = ListWeek[weekday]
+    }
+    run(){
+        this.state.runningOfficeHourCse116()
+        this.state.runningOfficeHourCse191()
+    }
+}
+
+ function SentChannel(Channel,text){
+client.channels.fetch(Channel)
+    .then(chal =>{
+        chal.send(text)
+        }
+    )
+}
