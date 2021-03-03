@@ -27,8 +27,7 @@ client.on('message', msg => {
     }
 });
 
-// client.login(process.env.token);
-client.login("NzgwMjE3MDMwNzYyNTYxNTg2.X7r3uw.8dj6b5ESB_9ZTfkHXKwL7muK4KQ");
+client.login(process.env.token);
 
 function officeHour(className,TaName,Channel,timeInbetween){
     const Message = "Office Hour for "+className+", "+ TaName+" has started."
