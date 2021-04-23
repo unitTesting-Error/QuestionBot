@@ -27,7 +27,7 @@ client.on('message', msg => {
     }
     if(msg.content.startsWith("!") || msg.author.id == "531799714589442068" ){
         if(msg.content.toLowerCase() == "!purr"){
-            const MessMessage = ["bi*ch", "meow", "purrr","?"]
+            const MessMessage = ["bi*ch","?","Purr", "Purrrrr", "Meow", "😹","https://media3.giphy.com/media/Ju7l5y9osyymQ/giphy.gif?cid=ecf05e47b43k6vanqwubl3zx8in81ym5eb6so989qrw8bft9&rid=giphy.gif&ct=g"]
             msg.channel.send(MessMessage[Math.floor(Math.random()*MessMessage.length)])
         }else if(msg.content.toLowerCase().contains("test") && msg.content.toLowerCase().contains("100")){
             msg.reply("bad test bro")
