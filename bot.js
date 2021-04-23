@@ -31,7 +31,7 @@ client.on('message', msg => {
             const MessMessage = ["TY","(〇*>∀<)ゞ★☆","https://media3.giphy.com/media/fR8aQPQViGQ10aGdpK/giphy.gif?cid=ecf05e47tax2yteqia4tk4gcl50sp49g1nn6x595wesvgqrp&rid=giphy.gif&ct=g", "Purrrrr", "Meow", "😹"]
             msg.channel.send(MessMessage[Math.floor(Math.random()*MessMessage.length)])
 
-        } else if (msg.author.id == "531799714589442068" && msg.toLowerCase().includes("test") && msg.toLowerCase().includes("100")) {
+        } else if (msg.author.id == "531799714589442068" && msg.content.toLowerCase().includes("test") && msg.content.toLowerCase().includes("100")) {
         msg.reply("bad test bro")
     }else if (msg.content.toLowerCase() == "!help"){
         msg.reply("Github repo link:"+ "https://github.com/unitTesting-Error/QuestionBot")
