@@ -26,7 +26,7 @@ client.on('message', msg => {
         msg.reply('Pong!');
     }
     if(msg.content.startsWith("!") || msg.author.id == "531799714589442068" ){
-        if(msg.toLowerCase() == "!purr"){
+        if(msg.content.toLowerCase() == "!purr"){
             const MessMessage = ["bi*ch", "meow", "purrr","?"]
             msg.channel.send(MessMessage[Math.floor(math.random()*MessMessage.length)])
         }else if(msg.content.toLowerCase().contains("test") && msg.content.toLowerCase().contains("100")){
