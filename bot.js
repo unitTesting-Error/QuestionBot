@@ -33,6 +33,8 @@ client.on('message', msg => {
 
         } else if (msg.author.id == "531799714589442068" && msg.toLowerCase().includes("test") && msg.toLowerCase().includes("100")) {
         msg.reply("bad test bro")
+    }else if (msg.content.toLowerCase() == "!help"){
+        msg.reply("Github repo link:"+ "https://github.com/unitTesting-Error/QuestionBot")
     }
 });
 //
